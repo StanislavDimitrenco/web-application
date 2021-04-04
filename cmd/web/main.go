@@ -17,11 +17,18 @@ func main() {
 	if err != nil {
 		log.Fatal("Can't get templates")
 	}
+
 	app.TemplateCache = tc
 	app.UseCache = false
 
-	repo := handler.
-		handler.Handlers()
+	repo := handler.NewRepo(&app)
+	handler.NewHandler(repo)
+
+	render.NewTemplates(&app)
+
+	http.HandleFunc("/", handler.Repo.Home)
+	http.HandleFunc("/about", handler.Repo.About)
+
 	fmt.Println(fmt.Sprintf("Staring application on port %s", config.PORT))
 	_ = http.ListenAndServe(config.PORT, nil)
 
