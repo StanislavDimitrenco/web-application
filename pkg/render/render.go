@@ -28,7 +28,7 @@ func AddDefaultData(td *models.TemplateData) *models.TemplateData {
 func Template(w http.ResponseWriter, tmpl string, td *models.TemplateData) {
 	var tc map[string]*template.Template
 
-	if app.UseCache {
+	if !app.UseCache {
 		// get the template cache from the app config
 		tc = app.TemplateCache
 	} else {
@@ -37,7 +37,7 @@ func Template(w http.ResponseWriter, tmpl string, td *models.TemplateData) {
 
 	t, ok := tc[tmpl]
 	if !ok {
-		log.Fatal("Could not get template from template cache\"")
+		log.Fatal("Could not get template from template cache")
 	}
 
 	buf := new(bytes.Buffer)
@@ -48,7 +48,7 @@ func Template(w http.ResponseWriter, tmpl string, td *models.TemplateData) {
 
 	_, err := buf.WriteTo(w)
 	if err != nil {
-		fmt.Println("Error writing template to browser", err)
+		fmt.Println("error writing template to browser", err)
 	}
 
 }
@@ -68,6 +68,8 @@ func CreateTemplateCache() (map[string]*template.Template, error) {
 		if err != nil {
 			return myCache, err
 		}
+
+		fmt.Println(page)
 
 		matches, err := filepath.Glob("./templates/*.layout.tmpl")
 		if err != nil {

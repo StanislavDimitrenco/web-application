@@ -26,10 +26,15 @@ func main() {
 
 	render.NewTemplates(&app)
 
-	http.HandleFunc("/", handler.Repo.Home)
-	http.HandleFunc("/about", handler.Repo.About)
+	srv := &http.Server{
+		Addr:    config.PORT,
+		Handler: routs(&app),
+	}
 
-	fmt.Println(fmt.Sprintf("Staring application on port %s", config.PORT))
-	_ = http.ListenAndServe(config.PORT, nil)
+	fmt.Println(fmt.Sprintf("Staring application on port http://localhost%s/", config.PORT))
+	err = srv.ListenAndServe()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 }
