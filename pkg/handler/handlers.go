@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/StanislavDimitrenko/web-application/pkg/config"
 	"github.com/StanislavDimitrenko/web-application/pkg/models"
 	"github.com/StanislavDimitrenko/web-application/pkg/render"
@@ -29,6 +30,9 @@ func NewHandler(r *Repository) {
 
 // Home is the handler for the home page
 func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
+	remoteIp := r.RemoteAddr
+	fmt.Println(remoteIp)
+	m.App.Session.Put(r.Context(), "remote_ip", remoteIp)
 	render.Template(w, "home.page.tmpl", &models.TemplateData{})
 }
 
@@ -36,6 +40,9 @@ func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
 func (m *Repository) About(w http.ResponseWriter, r *http.Request) {
 	stringData := make(map[string]string)
 	stringData["test"] = "Hello World"
+
+	stringData["remote_ip"] = m.App.Session.GetString(r.Context(), "remote_ip")
+	fmt.Println(stringData["remote_ip"])
 
 	render.Template(w, "about.page.tmpl", &models.TemplateData{
 		StringMap: stringData,
